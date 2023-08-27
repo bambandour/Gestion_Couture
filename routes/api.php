@@ -48,10 +48,19 @@ Route::post('/fournisseur',[FournisseurController::class,'store'])->name('ajoute
 Route::post('/images',[ImageController::class,'uploadImage'])->name('insererImage');
 
 
-Route::get('/articles',[ArticleVenteController::class,'index'])->name('All.articleVente');
+// Route::get('/article-vente',[ArticleVenteController::class,'index'])->name('All.articleVente');
 
-Route::post('/article',[ArticleVenteController::class,'store'])->name('add.articleVente');
+// Route::post('/article-vente',[ArticleVenteController::class,'store'])->name('add.articleVente');
 
+Route::group(['prefix' => 'article-vente'], function () {
+    Route::get('/', [ArticleVenteController::class, 'index'])->name('articles-vente.index');
+
+    Route::post('/', [ArticleVenteController::class, 'store'])->name('articles-vente.store');
+    
+    Route::put('/{article_vente}', [ArticleVenteController::class, 'update'])->name('articles-vente.update');
+
+    Route::delete('/{article_vente}', [ArticleVenteController::class, 'destroy'])->name('articles-vente.destroy');
+});
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

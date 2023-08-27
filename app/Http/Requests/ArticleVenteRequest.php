@@ -22,7 +22,23 @@ class ArticleVenteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "libelle"=>"required|unique:categorie_confections|min:3",
+            "prix_vente"=>"numeric",
+            "marge"=>"numeric",
+            "cout_fabrication"=>"numeric",
+            "stock"=>"required|integer|min:1",
+            'categorie' => 'required|string|in:tissu,bouton,fil',
+
+            //     'libelle' => 'required|string|max:255',
+            // 'stock' => 'required|integer|min:1',
+            // 'categorie' => 'required|string|in:tissu, bouton, fil',
+            'photo' => 'nullable|string|mimes:jpeg,jpg,png,|max:1048', 
+            'article' => 'required|array|min:3',
+            'article.*' => 'required|integer|distinct', 
+            'quantite' => 'required|array|min:3',
+            'quantite.*' => 'required|integer',
         ];
+
+        
     }
 }

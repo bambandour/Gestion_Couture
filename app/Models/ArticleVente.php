@@ -11,6 +11,12 @@ class ArticleVente extends Model
     protected $guarded=['id'];
 
     public function article_ventes(){
-        return $this->belongsToMany(ArticleVente::class,'article_ventes');
+        return $this->belongsToMany(ArticleVente::class,'article_associations','article_vente_id','article_id');
+                        // ->withPivot('quantité')
+                        // ->withTimestamps();
+    }
+    public function categorie()
+    {
+        return $this->belongsTo(CategorieConfection::class, 'categorie_id');
     }
 }
