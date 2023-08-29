@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class ArticleVenteCollection extends ResourceCollection
 {
     public $mes;
-    public function __construct($collection, $mes){
+    public function __construct($collection , $mes){
         $this->collection=$collection;
         $this->mes=$mes;
     }
@@ -43,6 +43,7 @@ class ArticleVenteCollection extends ResourceCollection
                 "photo"=>$article->photo,
                 "reference"=>$article->reference,
                 ];
-        })->toArray();
+        }
+        )->toArray();
     }
 }

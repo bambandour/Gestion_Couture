@@ -90,20 +90,22 @@ class ArticleController extends Controller
 
         $catego=CategorieConfection::where('libelle',$request->categorie)->first();
 
-        $numero=CategorieConfection::where('libelle',$request->categorie)->count()+1;
+        $numero=CategorieConfection::where('libelle',$request->categorie)
+                                        ->where('type','article_confections')
+                                        ->count()+1;
 
         $reference='REF-'.strtoupper(substr($request->libelle,0,3)).'-'.strtoupper($catego->libelle).'-'.$numero;
 
         $id->update(
-            $request->only('libelle','prix','stock','categorie_id','photo','reference')
-            // [
-            //     "libelle"=>$request->libelle,
-            //     "prix"=>$request->prix,
-            //     "stock"=>$request->stock,
-            //     "categorie_id"=>$catego->id,
-            //     "photo"=>$request->photo,
-            //     "reference"=>$reference
-            // ]
+            // $request->only('libelle','prix','stock','categorie_id','photo','reference')
+            [
+                "libelle"=>$request->libelle,
+                "prix"=>$request->prix,
+                "stock"=>$request->stock,
+                "categorie_id"=>$catego->id,
+                "photo"=>$request->photo,
+                "reference"=>$reference
+            ]
         );
         
         return new ArticleCollection($id,"Mise à jour reussi");

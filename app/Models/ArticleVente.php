@@ -12,7 +12,7 @@ class ArticleVente extends Model
 
     public function article_ventes(){
         return $this->belongsToMany(ArticleVente::class,'article_associations','article_vente_id','article_id');
-                        // ->withPivot('quantité')
+                        // ->withPivot('quantite')
                         // ->withTimestamps();
     }
     public function categorie()

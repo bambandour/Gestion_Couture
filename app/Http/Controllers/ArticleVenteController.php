@@ -13,8 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 class ArticleVenteController extends Controller
 {
     public function index(){
-        $article=ArticleVente::paginate(5);
-        return new ArticleVenteCollection($article,'Liste des articles de ventes et la pagination');
+        $article=ArticleVente::paginate(3);
+        $categorie=CategorieConfection::where('type','categorie_vente')->get();
+        return [
+            // "data"=>[
+                "articleVente"=> new ArticleVenteCollection($article,'Liste des articles de ventes et la pagination'),
+                "categories"=>$categorie
+            //]
+            
+        ];
+
     }
 
     public function store(Request $request){
@@ -28,21 +36,19 @@ class ArticleVenteController extends Controller
         
         $article=ArticleVente::create([
             "libelle"=>$request->libelle,
-            "prix_vente"=>28000,
+            "prix_vente"=>$request->marge+23000,
             "cout_fabrication"=>23000,
-            "marge"=>5000,
+            "marge"=>$request->marge,
             "promo"=>false,
-            "stock"=>$request->stock,
+            "stock"=>2,
             "categorie_id"=>$catego->id,
             "photo"=>$request->photo,
             "reference"=>$reference
         ]);
-        $tabId=$request->article;
-        // $quantites = $request->quantite;
-        $article->article_ventes()->attach($tabId);
-        foreach ($tabId as $key=>$id) {
-            $quantite=$request->quantite[$key];
-            $article->article_ventes()->updateExistingPivot($id, ['quantite' => $quantite]);
+        
+        $confections=$request->confections;
+        foreach ($confections as $key=>$value) {
+            $article->article_ventes()->attach([$value['id']=>['quantite' => $value["quantite"]]]);
         }
 
         DB::commit();
@@ -74,7 +80,7 @@ class ArticleVenteController extends Controller
             $reference='REF-'.strtoupper(substr($request->libelle,0,3)).'-'.strtoupper($catego->libelle).'-'.$numero;
             $article = ArticleVente::findOrFail($id);
 
-            dd($id);
+            
             // $article->prix_vente=28000;
             // $article->cout_fabrication=23000;
             // $article->marge=5000;
@@ -85,13 +91,11 @@ class ArticleVenteController extends Controller
             $article->photo = $request->photo;
             $article->reference = $reference;            
             $article->save();
-            dd($article);
+            // dd($article);
 
-            
-
-            $tabId = $request->input('article');
+            $tabId = $request->article;
             foreach ($tabId as $key => $articleId) {
-                $quantite = $request->input('quantite.' . $key); 
+                $quantite = $request->quantite . $key; 
                 $article->article_ventes()->updateExistingPivot($articleId, ['quantite' => $quantite]);
             }
 
