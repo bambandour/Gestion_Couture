@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ArticleVenteCollection;
+use App\Http\Resources\ArtVenteResource;
+use App\Models\Article;
 use App\Models\articleAssociation;
 use App\Models\ArticleVente;
 use App\Models\CategorieConfection;
@@ -13,16 +15,15 @@ use Symfony\Component\HttpFoundation\Response;
 class ArticleVenteController extends Controller
 {
     public function index(){
-        $article=ArticleVente::paginate(3);
+        $article=ArticleVente::paginate(5);
         $categorie=CategorieConfection::where('type','categorie_vente')->get();
+        $articleConfection=Article::all();
         return [
-            // "data"=>[
-                "articleVente"=> new ArticleVenteCollection($article,'Liste des articles de ventes et la pagination'),
-                "categories"=>$categorie
-            //]
-            
+                // "articleVente"=> new ArticleVenteCollection($article,'Articles de ventes && pagination'),
+                "article_vente"=>ArtVenteResource::collection($article),
+                "categories"=>$categorie,
+                "articleConfection"=>$articleConfection,
         ];
-
     }
 
     public function store(Request $request){
@@ -33,11 +34,13 @@ class ArticleVenteController extends Controller
                                         ->where('type','categorie_confection')
                                         ->count()+1;
         $reference='REF-'.strtoupper(substr($request->libelle,0,3)).'-'.strtoupper($catego->libelle).'-'.$numero;
-        
+
+        // $cout=explode('',$request->confections);
+        // dd($cout);
         $article=ArticleVente::create([
             "libelle"=>$request->libelle,
-            "prix_vente"=>$request->marge+23000,
-            "cout_fabrication"=>23000,
+            "prix_vente"=>$request->marge+15000,
+            "cout_fabrication"=>15000,
             "marge"=>$request->marge,
             "promo"=>false,
             "stock"=>2,
@@ -50,7 +53,7 @@ class ArticleVenteController extends Controller
         foreach ($confections as $key=>$value) {
             $article->article_ventes()->attach([$value['id']=>['quantite' => $value["quantite"]]]);
         }
-
+        
         DB::commit();
 
         } catch (\Exception $e) {
@@ -79,25 +82,24 @@ class ArticleVenteController extends Controller
                                         ->count()+1;
             $reference='REF-'.strtoupper(substr($request->libelle,0,3)).'-'.strtoupper($catego->libelle).'-'.$numero;
             $article = ArticleVente::findOrFail($id);
-
-            
-            // $article->prix_vente=28000;
-            // $article->cout_fabrication=23000;
-            // $article->marge=5000;
-            // $article->promo=false;
+            $article->prix_vente=$request->marge+5000;
+            $article->cout_fabrication=25000;
+            $article->marge=$request->marge;
+            $article->promo=false;
             $article->libelle = $request->libelle;
             $article->stock = $request->stock;
             $article->categorie_id = $request->catego->id;
             $article->photo = $request->photo;
             $article->reference = $reference;            
-            $article->save();
-            // dd($article);
-
-            $tabId = $request->article;
-            foreach ($tabId as $key => $articleId) {
-                $quantite = $request->quantite . $key; 
-                $article->article_ventes()->updateExistingPivot($articleId, ['quantite' => $quantite]);
+            dd($article);
+            // $article->update();
+           
+                        
+            $confections=$request->confections;
+            foreach ($confections as $key=>$value) {
+                $article->article_ventes()->sync([$value['id']=>['quantite' => $value["quantite"]]]);
             }
+            
 
         DB::commit();
         } catch (\Exception $e) {

@@ -30,7 +30,6 @@ class ArticleVenteCollection extends ResourceCollection
     public function articleVenteCollection($collection)
     {
       return $collection->map (function($article){
-             
         return[
                 "id"=>$article->id,
                 "libelle"=>$article->libelle,
@@ -42,6 +41,7 @@ class ArticleVenteCollection extends ResourceCollection
                 "categorie"=>$article->categorie->libelle,
                 "photo"=>$article->photo,
                 "reference"=>$article->reference,
+                "confections"=>new ArticleAssociationResource($article)
                 ];
         }
         )->toArray();

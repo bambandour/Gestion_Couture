@@ -25,7 +25,6 @@ class ArticleCollection extends ResourceCollection
         return [
             "message"=>$this->mes,
             "data"=>$this->articleCollection($this->collection),
-
             "links"=>$this->collection->toArray()["links"],
             // "data"=>$this->collection,
             "succes"=>true,
